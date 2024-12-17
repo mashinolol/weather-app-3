@@ -1,4 +1,4 @@
-module weather-app-2
+module weather-app-3
 
 go 1.21.6
 

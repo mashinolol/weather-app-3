@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
-	"weather-app-folders/internal/models"
+	"weather-app-3/internal/models"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

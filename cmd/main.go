@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"weather-app-folders/config"
-	"weather-app-folders/internal/handlers"
-	"weather-app-folders/pkg/database"
+	"weather-app-3/config"
+	"weather-app-3/internal/handlers"
+	"weather-app-3/pkg/database"
 )
 
 func main() {
