@@ -1,88 +1,16 @@
-package main
+package handlers
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-type WeatherData struct {
-	City        string    `bson:"city" json:"city"`
-	Description string    `bson:"description" json:"description"`
-	Temp        float64   `bson:"temp" json:"temp"`
-	LastUpdated time.Time `bson:"last_updated" json:"last_updated"`
-}
-
-type weatherjson struct {
-	Weather []struct {
-		Description string `json:"description"`
-	} `json:"weather"`
-
-	Main struct {
-		Temp float64 `json:"temp"`
-	} `json:"main"`
-
-	Name string `json:"name"`
-}
-
-var weatherCollection *mongo.Collection
-
-func main() {
-	// Load environment variables
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
-	MONGO_URI := os.Getenv("MONGO_URI")
-	BASE_URL := os.Getenv("BASE_URL")
-	API_KEY := os.Getenv("API_KEY")
-
-	// Connect to MongoDB
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(MONGO_URI))
-	if err != nil {
-		log.Fatal("Failed to connect to MongoDB:", err)
-	}
-	error := client.Ping(ctx, nil)
-	if error != nil {
-		log.Fatal("Failed to ping MongoDB:", error)
-	}
-
-	defer func() {
-		if err := client.Disconnect(ctx); err != nil {
-			log.Fatal("Failed to disconnect MongoDB:", err)
-		}
-	}()
-
-	weatherCollection = client.Database("weatherdb").Collection("weather")
-
-	http.HandleFunc("/weather", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			getWeatherHandler(w, r)
-		case http.MethodPut:
-			putWeatherHandler(w, r, BASE_URL, API_KEY)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
-
-	fmt.Println("Server is running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
 
 func getWeatherHandler(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
